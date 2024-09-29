@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskTracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TaskTracker</h1>
+        <input type="text" id="taskInput" placeholder="Add a new task...">
+        <button id="addTaskButton">Add Task</button>
+        <ul id="taskList"></ul>
+        <div>
+            <button id="showAll">Show All</button>
+            <button id="showActive">Show Active</button>
+            <button id="showCompleted">Show Completed</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskInput = document.getElementById('taskInput');
+            const addTaskButton = document.getElementById('addTaskButton');
+            const taskList = document.getElementById('taskList');
+            const showAllButton = document.getElementById('showAll');
+            const showActiveButton = document.getElementById('showActive');
+            const showCompletedButton = document.getElementById('showCompleted');
+
+            let tasks = [];
+
+            const renderTasks = (filter) => {
+                taskList.innerHTML = '';
+                let filteredTasks = tasks;
+
+                if (filter === 'active') {
+                    filteredTasks = tasks.filter(task => !task.completed);
+                } else if (filter === 'completed') {
+                    filteredTasks = tasks.filter(task => task.completed);
+                }
+
+                filteredTasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = task.text;
+
+                    if (task.completed) {
+                        li.classList.add('completed');
+                    }
+
+                    const completeButton = document.createElement('button');
+                    completeButton.textContent = '✔️';
+                    completeButton.onclick = () => {
+                        task.completed = !task.completed;
+                        renderTasks(filter);
+                    };
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '🗑️';
+                    deleteButton.onclick = () => {
+                        tasks.splice(index, 1);
+                        renderTasks(filter);
+                    };
+
+                    li.appendChild(completeButton);
+                    li.appendChild(deleteButton);
+                    taskList.appendChild(li);
+                });
+            };
+
+            addTaskButton.onclick = () => {
+                const taskValue = taskInput.value.trim();
+                if (!taskValue) {
+                    alert("Please enter a task before adding.");
+                    return;
+                }
+                tasks.push({ text: taskValue, completed: false });
+                taskInput.value = '';
+                renderTasks('all');
+            };
+
+            showAllButton.onclick = () => renderTasks('all');
+            showActiveButton.onclick = () => renderTasks('active');
+            showCompletedButton.onclick = () => renderTasks('completed');
+
+            renderTasks('all');
+        });
+    </script>
+</body>
+</html>
